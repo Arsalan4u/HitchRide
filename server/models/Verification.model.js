@@ -14,5 +14,9 @@ const VerificationSchema = new mongoose.Schema({
 
 const Verification = mongoose.model('Verification', VerificationSchema);
 
-// ✅ Export in ESM style
 export default Verification;
+
+
+
+
+//-----------------

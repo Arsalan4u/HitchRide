@@ -1,113 +1,203 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
 import { UserVerification } from './UserVerification';
 import { VehicleVerification } from './VehicleVerification';
+import { useAuth } from '@clerk/clerk-react';
 
 interface RegistrationModalProps {
   onClose: () => void;
 }
 
 export const RegistrationModal = ({ onClose }: RegistrationModalProps) => {
+  const { userId } = useAuth();
   const [step, setStep] = useState<number>(1);
   const [userData, setUserData] = useState<any>(null);
+  const [modalReady, setModalReady] = useState(false);
+  const [isUserVerified, setIsUserVerified] = useState(false);
+  const [isVehicleVerified, setIsVehicleVerified] = useState(false);
 
-  // Lock body scroll when modal opens and restore when closed
   useEffect(() => {
-    const originalStyle = window.getComputedStyle(document.body).overflow;
     document.body.style.overflow = 'hidden';
     return () => {
-      document.body.style.overflow = originalStyle;
+      document.body.style.overflow = '';
     };
   }, []);
 
-  // Scroll to top when modal opens
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
+  // Modified to check both user and vehicle verification status
+  useEffect(() => {
+    const checkVerificationStatus = async () => {
+      // First check local storage
+      if (userId) {
+        const userVerified = localStorage.getItem(`isVerified_${userId}`) === 'true';
+        const vehicleVerified = localStorage.getItem(`vehicleVerified_${userId}`) === 'true';
+        
+        setIsUserVerified(userVerified);
+        setIsVehicleVerified(vehicleVerified);
+        
+        // If user is already verified, show vehicle form directly
+        if (userVerified && !vehicleVerified) {
+          setStep(2);
+        } else {
+          setStep(1);
+        }
+      }
+      
+      // You can also check with backend if needed
+      try {
+        if (userId) {
+          const response = await fetch(`http://localhost:5000/api/verification/check-status?userId=${userId}`);
+          const data = await response.json();
+          
+          if (data.isUserVerified) {
+            setIsUserVerified(true);
+            if (!data.isVehicleVerified) {
+              setStep(2);
+            }
+          }
+          
+          if (data.isVehicleVerified) {
+            setIsVehicleVerified(true);
+          }
+        }
+      } catch (error) {
+        console.error('Error checking verification status:', error);
+      }
+      
+      setModalReady(true);
+    };
+    
+    checkVerificationStatus();
+  }, [userId]);
+
+  // Check if both verifications are complete
+  useEffect(() => {
+    if (isUserVerified && isVehicleVerified) {
+      // Both verifications complete, close modal or show success
+      onClose();
+    }
+  }, [isUserVerified, isVehicleVerified, onClose]);
+
   const handleUserSubmit = (data: any) => {
     setUserData(data);
+    const userIdentifier = data.email || data.userId || userId;
+    
+    // Save verification status
+    if (userIdentifier) {
+      localStorage.setItem(`isVerified_${userIdentifier}`, 'true');
+      if (userId) {
+        localStorage.setItem(`isVerified_${userId}`, 'true');
+      }
+    }
+    
+    setIsUserVerified(true);
     setStep(2);
   };
 
   const handleVehicleSubmit = (data: any) => {
     const completeData = { ...userData, ...data };
-    console.log('Registration complete:', completeData);
+    console.log('Full Registration Data:', completeData);
+    
+    // Save vehicle verification status
+    if (userId) {
+      localStorage.setItem(`vehicleVerified_${userId}`, 'true');
+    }
+    
+    setIsVehicleVerified(true);
     onClose();
   };
 
   const handleSkipVehicle = () => {
-    console.log('Vehicle verification skipped:', userData);
+    console.log('Skipped Vehicle Verification for:', userData);
     onClose();
   };
 
+  // Show loading while checking verification status
+  if (!modalReady) return (
+    <>
+      <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-40" />
+      <div className="fixed top-0 left-0 right-0 z-50 flex items-center justify-center p-4 h-screen w-full">
+        <div className="bg-white p-6 rounded-lg shadow-xl">
+          Loading verification status...
+        </div>
+      </div>
+    </>
+  );
+
+  // If both verifications are complete, don't show anything
+  if (isUserVerified && isVehicleVerified) {
+    return null;
+  }
+
   return (
     <>
-      {/* Non-interactive blurred background */}
-      <div 
-        className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-40"
-        onClick={onClose}
-      />
-      
-      {/* Modal container with forced top positioning */}
+      <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-40" onClick={onClose} />
       <div className="fixed top-0 left-0 right-0 z-50 flex items-center justify-center p-4 h-screen w-full overflow-y-auto">
-        <div 
+        <div
           className="relative w-full max-w-md rounded-lg shadow-xl bg-[#F5F6F5] max-h-[90vh] overflow-y-auto"
           onClick={(e) => e.stopPropagation()}
         >
-          {/* Rest of your existing modal content */}
+          {/* Header */}
           <div className="sticky top-0 z-10 p-6 bg-[#C8E6C9] rounded-t-lg">
             <button
               onClick={onClose}
-              className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 transition-colors"
+              className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
               aria-label="Close registration modal"
             >
               <X size={24} />
             </button>
-            
-            {/* Step indicator */}
+
+            {/* Stepper */}
             <div className="flex justify-center mb-6">
               <div className="flex items-center">
-                {/* Step 1 - User */}
+                {/* Step 1 */}
                 <div className={`flex flex-col items-center ${step >= 1 ? 'text-[#1B5E20]' : 'text-gray-500'}`}>
-                  <div className={`flex items-center justify-center w-10 h-10 rounded-full ${step >= 1 ? 'bg-[#1B5E20] text-white' : 'bg-gray-200'}`}>
+                  <div
+                    className={`flex items-center justify-center w-10 h-10 rounded-full ${
+                      step >= 1 ? 'bg-[#1B5E20] text-white' : 'bg-gray-200'
+                    }`}
+                  >
                     <span className="font-medium">1</span>
                   </div>
                   <span className="mt-2 font-medium text-sm">USER</span>
                 </div>
-                
-                {/* Connector line */}
-                <div className={`w-16 h-1 ${step >= 2 ? 'bg-[#1B5E20]' : 'bg-gray-200'}`} />
-                
-                {/* Step 2 - Vehicle */}
+
+                {/* Line */}
+                <div className={`w-16 h-1 mx-2 ${step >= 2 ? 'bg-[#1B5E20]' : 'bg-gray-300'}`} />
+
+                {/* Step 2 */}
                 <div className={`flex flex-col items-center ${step === 2 ? 'text-[#1B5E20]' : 'text-gray-500'}`}>
-                  <div className={`flex items-center justify-center w-10 h-10 rounded-full ${step === 2 ? 'bg-[#1B5E20] text-white' : 'bg-gray-200'}`}>
+                  <div
+                    className={`flex items-center justify-center w-10 h-10 rounded-full ${
+                      step === 2 ? 'bg-[#1B5E20] text-white' : 'bg-gray-200'
+                    }`}
+                  >
                     <span className="font-medium">2</span>
                   </div>
-                  <span className="mt-2 font-medium text-sm">VEHICLE</span>
+                  <span className="mt-2 font-medium text-sm text-center">VEHICLE</span>
                 </div>
               </div>
             </div>
           </div>
 
+          {/* Content */}
           <div className="p-6">
-            {step === 1 && (
-              <UserVerification
-                onSubmit={handleUserSubmit}
-                onClose={onClose}
-                onNext={() => setStep(2)}
-              />
-            )}
-            {step === 2 && (
-              <VehicleVerification
-                onSubmit={handleVehicleSubmit}
-                onSkip={handleSkipVehicle}
-                onClose={onClose}
-              />
+            {step === 1 && !isUserVerified && <UserVerification onSubmit={handleUserSubmit} />}
+            {(step === 2 || isUserVerified) && !isVehicleVerified && (
+              <VehicleVerification onSubmit={handleVehicleSubmit} onSkip={handleSkipVehicle} />
             )}
           </div>
         </div>
       </div>
-    </>
-  );
+    </>
+  );
 };
+
+
+
+// //------------------------------------------------------------------------------------------------------------------
+
+

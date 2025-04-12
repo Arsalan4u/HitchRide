@@ -9,3 +9,8 @@ export const verifyClerkSession = ClerkExpressRequireAuth({
 
 // Usage in your routes:
 router.post('/verifications', verifyClerkSession, verificationController);
+
+
+//---------------------------------------------
+
+

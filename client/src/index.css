@@ -146,3 +146,39 @@
     }
   }
 }
+.nav-link {
+  @apply text-gray-700 dark:text-gray-300 hover:text-[#2E7D32] dark:hover:text-green-400 transition-colors font-medium text-sm uppercase tracking-wider;
+}
+.premium-button {
+  @apply px-5 py-2.5 bg-gradient-to-r from-[#FFD700] to-[#FFC000] hover:from-[#FFC000] hover:to-[#FFB000] text-[#1B5E20] dark:text-green-900 font-semibold rounded-full shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-2;
+}
+.register-button {
+  @apply px-5 py-2.5 bg-gradient-to-r from-[#4FC3F7] to-[#03A9F4] hover:from-[#03A9F4] hover:to-[#0288D1] text-white font-semibold rounded-full shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-2;
+}
+.premium-badge {
+  @apply absolute -top-1 -right-1 bg-yellow-400 dark:bg-yellow-300 rounded-full p-1;
+}
+.signin-button {
+  @apply flex items-center gap-2 border-[#2E7D32] dark:border-green-400 text-[#2E7D32] dark:text-green-400 hover:bg-[#2E7D32]/10 dark:hover:bg-green-400/10;
+}
+.signup-button {
+  @apply bg-gradient-to-r from-[#4FC3F7] to-[#03A9F4] hover:from-[#03A9F4] hover:to-[#0288D1] text-white flex items-center gap-2 shadow-md hover:shadow-lg;
+}
+.mobile-nav-link {
+  @apply block w-full text-left py-3 border-b border-gray-100 dark:border-gray-800 text-gray-700 dark:text-gray-300 hover:text-[#2E7D32] dark:hover:text-green-400 transition-colors;
+}
+.mobile-premium-button {
+  @apply w-full py-3 bg-gradient-to-r from-[#FFD700] to-[#FFC000] hover:from-[#FFC000] hover:to-[#FFB000] text-[#1B5E20] dark:text-green-900 font-semibold rounded-full shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-2;
+}
+.mobile-register-button {
+  @apply w-full py-3 bg-gradient-to-r from-[#4FC3F7] to-[#03A9F4] hover:from-[#03A9F4] hover:to-[#0288D1] text-white font-semibold rounded-full shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-2;
+}
+.mobile-premium-badge {
+  @apply absolute top-1 right-[calc(50%-28px)] bg-yellow-400 dark:bg-yellow-300 rounded-full p-1;
+}
+.mobile-signin-button {
+  @apply w-full flex items-center justify-center gap-2 border-[#2E7D32] dark:border-green-400 text-[#2E7D32] dark:text-green-400 hover:bg-[#2E7D32]/10 dark:hover:bg-green-400/10;
+}
+.mobile-signup-button {
+  @apply w-full bg-gradient-to-r from-[#4FC3F7] to-[#03A9F4] hover:from-[#03A9F4] hover:to-[#0288D1] text-white flex items-center justify-center gap-2 shadow-md hover:shadow-lg;
+}

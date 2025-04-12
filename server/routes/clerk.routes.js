@@ -5,5 +5,6 @@ import { handleClerkWebhook } from '../controllers/clerk.controller.js'; // ✅ 
 const router = express.Router();
 
 router.post('/webhook', handleClerkWebhook);
+// router.post('/', handleClerkWebhook);
 
 export default router;

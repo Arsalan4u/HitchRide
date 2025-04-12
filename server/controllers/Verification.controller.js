@@ -1,8 +1,17 @@
-import Verification from '../models/Verification.model';
+import Verification from '../models/Verification.model.js';
 
 exports.submitVerification = async (req, res) => {
   try {
     const { clerkUserId, fullName, phone, aadharNumber, gender, dob } = req.body;
+
+    // 🔒 Check if user has already submitted verification
+    const alreadySubmitted = await Verification.findOne({ clerkUserId });
+    if (alreadySubmitted) {
+      return res.status(400).json({
+        success: false,
+        error: 'Verification form already submitted for this user.'
+      });
+    }
 
     const verificationData = new Verification({
       clerkUserId,
@@ -14,7 +23,7 @@ exports.submitVerification = async (req, res) => {
     });
 
     await verificationData.save();
-    
+
     res.status(201).json({
       success: true,
       data: verificationData
@@ -27,20 +36,5 @@ exports.submitVerification = async (req, res) => {
   }
 };
 
-exports.getVerification = async (req, res) => {
-  try {
-    const verification = await Verification.findOne({ 
-      clerkUserId: req.params.userId 
-    });
-    
-    res.status(200).json({
-      success: true,
-      data: verification
-    });
-  } catch (err) {
-    res.status(404).json({
-      success: false,
-      error: 'Verification not found'
-    });
-  }
-};
+//--------------------------------------------------------------------------------------------------
+

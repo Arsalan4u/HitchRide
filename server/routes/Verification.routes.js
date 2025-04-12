@@ -1,9 +1,17 @@
-const express = require('express');
+// backend/routes/verification.routes.ts
+import express from 'express';
+import { submitVerification, getVerification } from '../controllers/Verification.controller';
+import { verifyClerkSession } from '../middleware/authMiddleWare.js';
+
 const router = express.Router();
-const verificationController = require('../controllers/Verification.controller.js');
-const authMiddleware = require('../middleware/auth');
 
-router.post('/', authMiddleware, verificationController.submitVerification);
-router.get('/:userId', authMiddleware, verificationController.getVerification);
+// POST /api/verification - Submit a new verification (Protected)
+router.post('/', verifyClerkSession, submitVerification);
 
-module.exports = router;
+// GET /api/verification/:userId - Get a user's verification (Protected)
+router.get('/:userId', verifyClerkSession, getVerification);
+
+export default router;
+
+
+//--------------------------------------------------------------------------

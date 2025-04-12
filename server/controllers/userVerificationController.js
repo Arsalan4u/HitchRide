@@ -1,34 +1,36 @@
-import User from "../models/User.js";
+import Verification from "../models/Verification.model.js";
 
 const verifyUser = async (req, res) => {
-  const { userId, fullname, phone, aadhaarNumber, gender, dob } = req.body;
+  const { userId, fullName, phone, aadharNumber, gender, dob } = req.body;
 
-  if (!userId || !aadhaarNumber || !fullname || !phone || !gender || !dob) {
+  if (!userId || !aadharNumber || !fullName || !phone || !gender || !dob) {
     return res.status(400).json({
       success: false,
       message: "Missing required user verification data",
     });
   }
 
-  if (aadhaarNumber.length !== 12 || !/^\d+$/.test(aadhaarNumber)) {
+  if (aadharNumber.length !== 12 || !/^\d+$/.test(aadharNumber)) {
     return res.status(400).json({
       success: false,
       message: "Invalid Aadhaar Number",
     });
   }
 
-  const maskedNumber = aadhaarNumber.slice(0, 4) + "xxxxxxxx";
+  const maskedNumber = aadharNumber.slice(0, 4) + "xxxxxxxx";
 
   try {
-    const user = await User.findOneAndUpdate(
-      { clerkId: userId },
+    const verification = await Verification.findOneAndUpdate(
+      { clerkUserId: userId },
       {
-        fullname,
+        clerkUserId: userId, // add this
+        fullName,
         phone,
-        aadhaarNumber: maskedNumber,
+        aadharNumber: maskedNumber,
         gender,
         dob,
-        isUserVerified: true,
+        isVerified: true, // fix this field name
+        verifiedAt: new Date(), // optional
       },
       { new: true, upsert: true }
     );
@@ -36,7 +38,7 @@ const verifyUser = async (req, res) => {
     res.status(200).json({
       success: true,
       message: "Aadhaar Verified",
-      user,
+      verification,
     });
   } catch (err) {
     console.error("Verification error:", err);
@@ -47,4 +49,6 @@ const verifyUser = async (req, res) => {
   }
 };
 
-export { verifyUser };
+export { verifyUser };
+
+
