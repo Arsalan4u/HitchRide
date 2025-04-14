@@ -5,11 +5,9 @@ import Verification from '../models/Verification.model.js';
 import fetchClerkUser from '../utils/fetchClerkUser.js'; // Step 1 ka helper
 
 export const handleClerkWebhook = async (req, res) => {
-    console.log('📩 Incoming Request:', req); // Log the entire request object
-    console.log('📩 Request body:', req.body); // Log just the body
+  
   const { type, data } = req.body;
-  console.log('📨 Webhook type:', type);
-  console.log('📦 Webhookdata:',data);
+
   
   try {
     switch (type) {

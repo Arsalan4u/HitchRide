@@ -3,12 +3,14 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Leaf, Award, Droplet } from 'lucide-react';
 import { Progress } from "@/components/ui/progress";
 
+
 const EcoPoints = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [co2Count, setCo2Count] = useState(0);
   const [progress, setProgress] = useState(0);
   const sectionRef = useRef<HTMLDivElement>(null);
-
+  
+  
   const co2Target = 2573;
   const fuelTarget = 12850;
   const pointsTarget = 18650;
@@ -178,6 +180,6 @@ const EcoPoints = () => {
       </div>
     </section>
   );
-};
 
+};
 export default EcoPoints;
