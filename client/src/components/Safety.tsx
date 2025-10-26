@@ -45,7 +45,7 @@ const Safety = () => {
                   <Video className="h-6 w-6 text-eco" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-semibold mb-2">Optional Dashcam Integration</h3>
+                  <h3 className="text-xl font-semibold mb-2"> Dashcam Integration</h3>
                   <p className="text-gray-600">
                     Connect your dashcam to Hitch Ride for enhanced security. Footage is stored temporarily and only accessed in case of emergencies.
                   </p>

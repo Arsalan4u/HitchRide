@@ -44,6 +44,7 @@ import vehicleRoutes from "./routes/vehicleRoutes.js";
 import clerkRoutes from './routes/clerk.routes.js';
 import mapRoutes from './routes/mapRoutes.js';
 import { io } from './controllers/mapController.js';
+import emergencyRoutes from './routes/emergencyRoutes.js';
 
 dotenv.config();
 connectDB();
@@ -61,6 +62,8 @@ app.use("/api/verification", verificationRoutes);
 app.use("/api/vehicle", vehicleRoutes);
 app.use("/api/clerk", clerkRoutes);
 app.use("/api/map", mapRoutes);
+app.use('/api/emergency', emergencyRoutes);
+
 
 app.get("/", (req, res) => {
   res.send("Carpool Backend is Live!");

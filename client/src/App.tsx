@@ -11,6 +11,7 @@ import { PremiumProvider } from "./context/premiumContext";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import RideBooking from "../client2/src/pages/Index"; // Adjust path to Project B's Index
+import RideBookingDriver from "../client2/src/pages/RideBookingDriver"; 
 
 const queryClient = new QueryClient();
 
@@ -26,6 +27,7 @@ const App = () => (
               <Route path="/" element={<Index />} />
               {/* Add this new route for Project B integration */}
               <Route path="/ride-booking" element={<RideBooking />} />
+               <Route path="/ride-booking-driver" element={<RideBookingDriver />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
